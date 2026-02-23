@@ -1,0 +1,1142 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0a0a1a;
+  color: #e0e0e0;
+  font-family: 'Press Start 2P', monospace;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#game-container {
+  width: 1060px;
+  height: 700px;
+  position: relative;
+  background: #12122a;
+  border: 4px solid #2a2a4a;
+  box-shadow:
+    0 0 0 4px #0a0a1a,
+    0 0 0 8px #2a2a4a,
+    0 0 60px rgba(100, 100, 255, 0.08);
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+}
+
+.screen.active {
+  display: flex;
+}
+
+.hidden { display: none !important; }
+
+/* ============ TITLE SCREEN ============ */
+
+#title-screen {
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(50, 50, 120, 0.4) 0%, transparent 60%),
+    #0e0e22;
+  gap: 20px;
+  text-align: center;
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.title-sprite {
+  width: 84px;
+  height: 126px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.title-sprite canvas {
+  image-rendering: pixelated;
+}
+
+.game-title {
+  font-size: 28px;
+  line-height: 1.6;
+  color: #ffd700;
+  text-shadow:
+    3px 3px 0 #b8860b,
+    0 0 20px rgba(255, 215, 0, 0.3);
+  letter-spacing: 3px;
+  z-index: 2;
+}
+
+.game-subtitle {
+  font-size: 9px;
+  color: #8888aa;
+  letter-spacing: 2px;
+  z-index: 2;
+}
+
+.pixel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  padding: 16px 40px;
+  background: #2a2a4a;
+  color: #ffd700;
+  border: 3px solid #ffd700;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.15s;
+  z-index: 2;
+  position: relative;
+}
+
+.pixel-btn::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 3px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.pixel-btn:hover {
+  background: #ffd700;
+  color: #0e0e22;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.pixel-btn:hover::after {
+  border-color: #ffe44d;
+}
+
+.pixel-btn:active {
+  transform: scale(0.96);
+}
+
+.credit {
+  font-size: 8px;
+  color: #555577;
+  margin-top: 10px;
+  z-index: 2;
+}
+
+/* ============ GAME SCREEN ============ */
+
+#game-screen {
+  background: #12122a;
+  padding: 0;
+}
+
+/* --- Progress Bar --- */
+
+#progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 14px 0 10px;
+  background: #0e0e20;
+  border-bottom: 3px solid #2a2a4a;
+}
+
+.progress-levels {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.progress-level {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #3a3a5a;
+  background: #1a1a30;
+  color: #3a3a5a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.progress-level:hover {
+  border-color: #8888aa;
+  color: #8888aa;
+  background: #22223a;
+}
+
+.progress-level.current {
+  border-color: #ffd700;
+  color: #ffd700;
+  background: #2a2a3a;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+}
+
+.progress-level.current:hover {
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.5);
+}
+
+.progress-level.completed {
+  border-color: #2ecc71;
+  color: #2ecc71;
+  background: #1a3a2a;
+}
+
+.progress-level.completed:hover {
+  background: #1a4a2a;
+  box-shadow: 0 0 12px rgba(46, 204, 113, 0.3);
+}
+
+.progress-line {
+  width: 50px;
+  height: 3px;
+  background: #3a3a5a;
+}
+
+/* --- Skip Toggle --- */
+
+.skip-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.skip-toggle input {
+  display: none;
+}
+
+.skip-slider {
+  width: 32px;
+  height: 18px;
+  background: #2a2a4a;
+  border: 2px solid #3a3a5a;
+  border-radius: 9px;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.skip-slider::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 10px;
+  height: 10px;
+  background: #5a5a7a;
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.skip-toggle input:checked + .skip-slider {
+  background: #2a3a2a;
+  border-color: #2ecc71;
+}
+
+.skip-toggle input:checked + .skip-slider::after {
+  transform: translateX(14px);
+  background: #2ecc71;
+}
+
+.skip-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: #5a5a7a;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+
+.skip-toggle input:checked ~ .skip-label {
+  color: #2ecc71;
+}
+
+/* --- Level Title Overlay --- */
+
+#level-title {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 26, 0.92);
+  z-index: 50;
+  gap: 10px;
+}
+
+.lt-main {
+  font-size: 24px;
+  color: #ffd700;
+  text-shadow: 2px 2px 0 #b8860b;
+  letter-spacing: 3px;
+}
+
+.lt-sub {
+  font-size: 10px;
+  color: #8888aa;
+  letter-spacing: 2px;
+}
+
+/* --- Dialogue Area --- */
+
+#dialogue-area {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #16162e;
+  border-bottom: 3px solid #2a2a4a;
+  min-height: 130px;
+  cursor: pointer;
+  user-select: none;
+}
+
+#speaker-sprite {
+  flex-shrink: 0;
+  width: 70px;
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sprite-canvas {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+}
+
+#speech-bubble {
+  flex: 1;
+  background: #f5f0e3;
+  border: 4px solid #2c2137;
+  padding: 14px 18px;
+  position: relative;
+  color: #2c2137;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    4px 4px 0 #1a1a2e,
+    inset 0 0 0 2px #e8e0d0;
+}
+
+#speech-bubble::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 20px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 12px solid #2c2137;
+}
+
+#speech-bubble::after {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 22px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 9px solid #f5f0e3;
+}
+
+#speaker-name {
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.speaker-nurse { color: #2ecc71; }
+.speaker-female { color: #e84393; }
+.speaker-male { color: #0984e3; }
+
+#speech-text {
+  font-size: 12px;
+  line-height: 1.8;
+  flex: 1;
+  word-spacing: 2px;
+}
+
+#speech-continue {
+  font-size: 9px;
+  color: #b8860b;
+  text-align: right;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+.pulse-glow {
+  animation: pulse-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+#game-screen.dialogue-active {
+  cursor: pointer;
+}
+
+/* --- Game Area --- */
+
+#game-area {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  padding: 20px 24px;
+  overflow: auto;
+}
+
+/* --- Patient Panel --- */
+
+#patient-panel {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.panel-header {
+  font-size: 12px;
+  color: #ffd700;
+  letter-spacing: 2px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2a2a4a;
+  margin-bottom: 12px;
+}
+
+.patient-card {
+  background: #1e1e3a;
+  border: 3px solid #3a3a5a;
+  padding: 16px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: grab;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+
+.patient-card:hover {
+  border-color: #ffd700;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+}
+
+.patient-card.isolation {
+  border-color: #ff4757;
+  box-shadow: 0 0 8px rgba(255, 71, 87, 0.2);
+}
+
+.patient-card.dragging {
+  opacity: 0.4;
+  border-color: #ffd700;
+}
+
+.patient-card.selected {
+  border-color: #ffd700;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.35);
+  background: #2a2a4a;
+}
+
+.card-sprite {
+  flex-shrink: 0;
+  width: 40px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-sprite-canvas {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-name {
+  font-size: 10px;
+  color: #ffffff;
+  margin-bottom: 5px;
+  letter-spacing: 1px;
+}
+
+.card-details {
+  font-size: 9px;
+  color: #8888aa;
+  margin-bottom: 4px;
+}
+
+.text-female { color: #ff6b9d; }
+.text-male { color: #4fc3f7; }
+
+.patient-condition {
+  font-size: 9px;
+  color: #8888aa;
+  margin-top: 4px;
+}
+
+.isolation-badge {
+  color: #ff4757 !important;
+  font-weight: bold;
+}
+
+.warn-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  background: #ff4757;
+  color: #fff;
+  font-size: 8px;
+  font-style: normal;
+  vertical-align: middle;
+}
+
+/* --- Roster Panel --- */
+
+#roster-panel {
+  flex: 1;
+}
+
+#room-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.room-group {
+  background: #1a1a30;
+  border: 3px solid #2a2a4a;
+  padding: 14px;
+  min-width: 200px;
+}
+
+.room-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #2a2a4a;
+}
+
+.room-number {
+  font-size: 11px;
+  color: #e0e0e0;
+  letter-spacing: 1px;
+}
+
+.room-type-badge {
+  font-size: 8px;
+  padding: 3px 6px;
+  letter-spacing: 1px;
+}
+
+.type-semi {
+  background: #2a4a6a;
+  color: #7eb8da;
+}
+
+.type-private {
+  background: #4a2a4a;
+  color: #d47eda;
+}
+
+.room-beds {
+  display: flex;
+  gap: 8px;
+}
+
+.bed-slot {
+  flex: 1;
+  min-width: 110px;
+  padding: 12px;
+  border: 3px solid #3a3a5a;
+  background: #14142a;
+  text-align: center;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.bed-slot.occupied {
+  cursor: grab;
+}
+
+.bed-slot.occupied.female {
+  border-color: #5a2a4a;
+}
+
+.bed-slot.occupied.male {
+  border-color: #2a3a5a;
+}
+
+.bed-slot.dragging {
+  opacity: 0.4;
+}
+
+.bed-slot.selected {
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.35);
+  background: #2a2a3a;
+}
+
+.bed-slot.empty {
+  border-style: dashed;
+  border-color: #2a2a4a;
+}
+
+.bed-slot.valid-target {
+  border-color: #2ecc71;
+  border-style: solid;
+  background: rgba(46, 204, 113, 0.08);
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+  animation: pulse-green 1s ease-in-out infinite;
+}
+
+.bed-slot.invalid-target {
+  border-color: #e74c3c;
+  border-style: solid;
+  background: rgba(231, 76, 60, 0.05);
+}
+
+.bed-slot.drag-over.valid-target {
+  background: rgba(46, 204, 113, 0.18);
+  box-shadow: 0 0 18px rgba(46, 204, 113, 0.35);
+  transform: scale(1.03);
+}
+
+.bed-slot.drag-over.invalid-target {
+  background: rgba(231, 76, 60, 0.15);
+  box-shadow: 0 0 14px rgba(231, 76, 60, 0.3);
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 8px rgba(46, 204, 113, 0.15); }
+  50% { box-shadow: 0 0 16px rgba(46, 204, 113, 0.35); }
+}
+
+.bed-id {
+  font-size: 9px;
+  color: #666688;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.bed-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bed-sprite {
+  width: 28px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bed-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bed-patient-name {
+  font-size: 9px;
+  color: #ccc;
+}
+
+.gender-badge {
+  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gender-badge.female {
+  color: #ff6b9d;
+}
+
+.gender-badge.male {
+  color: #4fc3f7;
+}
+
+.bed-condition {
+  font-size: 7px;
+  color: #8888aa;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.bed-empty-icon {
+  width: 20px;
+  height: 20px;
+  border: 2px dashed #3a3a5a;
+  margin: 5px auto;
+}
+
+.bed-empty-text {
+  font-size: 8px;
+  color: #4a4a6a;
+}
+
+/* --- Rules Bar --- */
+
+#rules-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: #0e0e20;
+  border-top: 3px solid #2a2a4a;
+  flex-shrink: 0;
+}
+
+.rule {
+  font-size: 7px;
+  color: #6a6a8a;
+  letter-spacing: 1px;
+}
+
+.rule-sep {
+  color: #3a3a5a;
+  font-size: 8px;
+}
+
+/* ============ NOTIFICATION ============ */
+
+#notification {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c1a1a;
+  border: 3px solid #ff4757;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 100;
+  max-width: 600px;
+  box-shadow:
+    0 0 20px rgba(255, 71, 87, 0.25),
+    4px 4px 0 #1a0a0a;
+}
+
+#notification.hidden {
+  display: none;
+}
+
+#notification-sprite {
+  flex-shrink: 0;
+  width: 30px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#notification-text {
+  font-size: 10px;
+  color: #ff8a8a;
+  line-height: 1.7;
+  letter-spacing: 0.5px;
+}
+
+/* ============ LEVEL COMPLETE OVERLAY ============ */
+
+.level-complete-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 26, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.lc-text {
+  font-size: 28px;
+  color: #2ecc71;
+  text-shadow:
+    3px 3px 0 #1a6b3a,
+    0 0 30px rgba(46, 204, 113, 0.4);
+  letter-spacing: 4px;
+}
+
+/* ============ VICTORY SCREEN ============ */
+
+#victory-screen {
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(46, 204, 113, 0.12) 0%, transparent 60%),
+    #0e0e22;
+}
+
+.victory-sprite {
+  width: 84px;
+  height: 126px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.victory-sprite canvas {
+  image-rendering: pixelated;
+}
+
+.victory-title {
+  font-size: 32px;
+  color: #ffd700;
+  text-shadow:
+    3px 3px 0 #b8860b,
+    0 0 30px rgba(255, 215, 0, 0.3);
+  letter-spacing: 4px;
+}
+
+.victory-text {
+  font-size: 10px;
+  color: #aaaacc;
+  line-height: 1.8;
+}
+
+.victory-subtext {
+  font-size: 8px;
+  color: #2ecc71;
+  letter-spacing: 2px;
+}
+
+/* ============ SCROLLBAR ============ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #12122a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a5a;
+}
+
+/* ============ RESPONSIVE: TABLET ============ */
+
+@media (max-width: 1100px) {
+  #game-container {
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    box-shadow: none;
+  }
+
+  body {
+    overflow: auto;
+  }
+}
+
+/* ============ RESPONSIVE: MOBILE ============ */
+
+@media (max-width: 700px) {
+  body {
+    align-items: flex-start;
+  }
+
+  #game-container {
+    width: 100vw;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .screen {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .screen.active {
+    display: flex;
+  }
+
+  /* --- Title --- */
+
+  .game-title {
+    font-size: 20px;
+  }
+
+  .pixel-btn {
+    font-size: 12px;
+    padding: 14px 30px;
+  }
+
+  /* --- Progress Bar --- */
+
+  #progress-bar {
+    padding: 10px 8px 8px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .progress-levels {
+    gap: 0;
+  }
+
+  .progress-level {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+  }
+
+  .progress-line {
+    width: 24px;
+  }
+
+  .skip-toggle {
+    position: static;
+    transform: none;
+    order: 2;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .progress-levels {
+    order: 1;
+  }
+
+  /* --- Dialogue --- */
+
+  #dialogue-area {
+    padding: 12px 14px;
+    gap: 10px;
+    min-height: auto;
+  }
+
+  #speaker-sprite {
+    width: 50px;
+    height: 75px;
+  }
+
+  #speaker-sprite .sprite-canvas {
+    transform: scale(0.7);
+    transform-origin: top left;
+  }
+
+  #speech-bubble {
+    padding: 10px 12px;
+    min-height: 70px;
+  }
+
+  #speaker-name {
+    font-size: 9px;
+  }
+
+  #speech-text {
+    font-size: 10px;
+    line-height: 1.7;
+  }
+
+  #speech-continue {
+    font-size: 7px;
+  }
+
+  /* --- Game Area --- */
+
+  #game-area {
+    flex-direction: column;
+    padding: 14px;
+    gap: 14px;
+    overflow: visible;
+  }
+
+  #patient-panel {
+    width: 100%;
+  }
+
+  .patient-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .card-sprite {
+    width: 30px;
+    height: 45px;
+    transform: scale(0.75);
+    transform-origin: center;
+  }
+
+  .card-name {
+    font-size: 9px;
+  }
+
+  .card-details,
+  .patient-condition {
+    font-size: 8px;
+  }
+
+  /* --- Roster --- */
+
+  #room-grid {
+    gap: 10px;
+  }
+
+  .room-group {
+    padding: 10px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .room-beds {
+    gap: 6px;
+  }
+
+  .bed-slot {
+    min-width: 0;
+    padding: 10px 6px;
+  }
+
+  .room-number {
+    font-size: 9px;
+  }
+
+  .room-type-badge {
+    font-size: 7px;
+  }
+
+  .bed-id {
+    font-size: 8px;
+  }
+
+  .bed-sprite {
+    width: 20px;
+    height: 30px;
+  }
+
+  .bed-patient-name {
+    font-size: 7px;
+  }
+
+  .bed-condition {
+    font-size: 6px;
+  }
+
+  .gender-badge {
+    font-size: 12px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .panel-header {
+    font-size: 10px;
+  }
+
+  /* --- Rules Bar --- */
+
+  #rules-bar {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .rule {
+    font-size: 5px;
+  }
+
+  .rule-sep {
+    font-size: 6px;
+  }
+
+  /* --- Notification --- */
+
+  #notification {
+    left: 10px;
+    right: 10px;
+    transform: none;
+    max-width: none;
+    bottom: 10px;
+  }
+
+  #notification-text {
+    font-size: 8px;
+  }
+
+  /* --- Level Title --- */
+
+  .lt-main {
+    font-size: 18px;
+  }
+
+  .lt-sub {
+    font-size: 8px;
+  }
+
+  /* --- Level Complete --- */
+
+  .lc-text {
+    font-size: 20px;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  /* --- Victory --- */
+
+  .victory-title {
+    font-size: 22px;
+  }
+
+  .victory-text {
+    font-size: 9px;
+    padding: 0 20px;
+  }
+
+  .victory-subtext {
+    font-size: 7px;
+  }
+}
