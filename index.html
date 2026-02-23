@@ -75,6 +75,22 @@
       <p class="victory-subtext">You're a room assignment pro!</p>
       <button id="replay-btn" class="pixel-btn">PLAY AGAIN</button>
     </div>
+
+    <button id="share-btn" class="share-btn" title="Share QR Code">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/><rect x="17" y="17" width="4" height="4"/>
+        <line x1="14" y1="14" x2="14" y2="17"/><line x1="14" y1="14" x2="17" y2="14"/>
+      </svg>
+    </button>
+
+    <div id="qr-modal" class="qr-modal hidden">
+      <div class="qr-modal-content">
+        <div id="qr-code"></div>
+        <p class="qr-label">SCAN TO PLAY!</p>
+        <button id="qr-close" class="pixel-btn qr-close-btn">CLOSE</button>
+      </div>
+    </div>
   </div>
 
   <div id="notification" class="hidden">
@@ -98,6 +114,51 @@
     if (tn) { tn.innerHTML = ''; tn.appendChild(Sprites.createSpriteCanvas('nurse', 6)); }
     const vn = document.getElementById('victory-nurse');
     if (vn) { vn.innerHTML = ''; vn.appendChild(Sprites.createSpriteCanvas('nurse', 6)); }
+
+    (function() {
+      var qrBtn = document.getElementById('share-btn');
+      var qrModal = document.getElementById('qr-modal');
+      var qrClose = document.getElementById('qr-close');
+      var qrCodeEl = document.getElementById('qr-code');
+      var qrLoaded = false;
+
+      function loadQRLib() {
+        return new Promise(function(resolve, reject) {
+          if (window.QRCode) { resolve(); return; }
+          var s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      function showQR() {
+        loadQRLib().then(function() {
+          qrCodeEl.innerHTML = '';
+          new QRCode(qrCodeEl, {
+            text: window.location.href,
+            width: 200,
+            height: 200,
+            colorDark: '#0e0e22',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+          });
+          qrModal.classList.remove('hidden');
+        });
+      }
+
+      function hideQR() {
+        qrModal.classList.add('hidden');
+        qrCodeEl.innerHTML = '';
+      }
+
+      qrBtn.addEventListener('click', showQR);
+      qrClose.addEventListener('click', hideQR);
+      qrModal.addEventListener('click', function(e) {
+        if (e.target === qrModal) hideQR();
+      });
+    })();
   </script>
 </body>
 </html>
