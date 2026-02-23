@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Assignment Challenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="game-container">
+
+    <div id="title-screen" class="screen active">
+      <div class="scanlines"></div>
+      <div class="title-sprite" id="title-nurse"></div>
+      <h1 class="game-title">ROOM<br>ASSIGNMENT<br>CHALLENGE</h1>
+      <p class="game-subtitle">Billing &amp; Guest Services</p>
+      <button id="start-btn" class="pixel-btn">START GAME</button>
+      <p class="credit">Skills Fair 2026</p>
+    </div>
+
+    <div id="game-screen" class="screen">
+      <div id="progress-bar">
+        <div class="progress-levels">
+          <div class="progress-level" data-level="1"><span>1</span></div>
+          <div class="progress-line"></div>
+          <div class="progress-level" data-level="2"><span>2</span></div>
+          <div class="progress-line"></div>
+          <div class="progress-level" data-level="3"><span>3</span></div>
+          <div class="progress-line"></div>
+          <div class="progress-level" data-level="4"><span>4</span></div>
+        </div>
+        <label id="skip-toggle" class="skip-toggle">
+          <input type="checkbox" id="skip-checkbox">
+          <span class="skip-slider"></span>
+          <span class="skip-label">SKIP DIALOG</span>
+        </label>
+      </div>
+
+      <div id="level-title"></div>
+
+      <div id="dialogue-area" class="hidden">
+        <div id="speaker-sprite"></div>
+        <div id="speech-bubble">
+          <div id="speaker-name"></div>
+          <div id="speech-text"></div>
+          <div id="speech-continue" class="pulse-glow">CLICK ANYWHERE TO CONTINUE</div>
+        </div>
+      </div>
+
+      <div id="game-area">
+        <div id="patient-panel" class="hidden">
+          <div class="panel-header">NEW REFERRAL</div>
+          <div id="new-patients"></div>
+        </div>
+        <div id="roster-panel" class="hidden">
+          <div class="panel-header">ROOM ROSTER</div>
+          <div id="room-grid"></div>
+        </div>
+      </div>
+
+      <div id="rules-bar">
+        <div class="rule">NO MIXED GENDERS IN SEMI-PRIVATE</div>
+        <div class="rule-sep">&bull;</div>
+        <div class="rule">ISOLATION NEEDS PRIVATE ROOM</div>
+        <div class="rule-sep">&bull;</div>
+        <div class="rule">DON'T WASTE PRIVATE ROOMS</div>
+      </div>
+    </div>
+
+    <div id="victory-screen" class="screen">
+      <div class="victory-sprite" id="victory-nurse"></div>
+      <h1 class="victory-title">YOU DID IT!</h1>
+      <p class="victory-text">All patients have been perfectly assigned.</p>
+      <p class="victory-subtext">You're a room assignment pro!</p>
+      <button id="replay-btn" class="pixel-btn">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <div id="notification" class="hidden">
+    <div id="notification-sprite"></div>
+    <div id="notification-text"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/drag.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    Sprites.renderToCanvas(
+      Object.assign(document.createElement('canvas'), { id: '_tn' }),
+      'nurse', 6
+    );
+    const tn = document.getElementById('title-nurse');
+    if (tn) { tn.innerHTML = ''; tn.appendChild(Sprites.createSpriteCanvas('nurse', 6)); }
+    const vn = document.getElementById('victory-nurse');
+    if (vn) { vn.innerHTML = ''; vn.appendChild(Sprites.createSpriteCanvas('nurse', 6)); }
+  </script>
+</body>
+</html>
